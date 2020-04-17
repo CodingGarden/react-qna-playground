@@ -1,32 +1,35 @@
-import React, { Component, useState, useEffect } from 'react';
-import { Switch, Route, Redirect, useLocation, useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import {
+  Switch, Route, useLocation, useHistory,
+} from 'react-router-dom';
 
 import LandingPage from './LandingPage';
 import Dashboard from './Dashboard';
+import useFirebaseAuth from './useFirebaseAuth';
 
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const { user, login, logout } = useFirebaseAuth();
   const location = useLocation();
   const history = useHistory();
   useEffect(() => {
-    if (loggedIn && location.pathname !== '/dashboard') {
+    if (user && location.pathname !== '/dashboard') {
       // redirect to dashboard
       console.log('logged in! redirecting...');
       history.push('/dashboard');
-    } else if (!loggedIn && location.pathname !== '/') {
+    } else if (!user && location.pathname !== '/') {
       // redirect to home page
       console.log('not logged in! redirecting...');
       history.push('/');
     }
-  }, [loggedIn, location.pathname]);
+  }, [user, location.pathname]);
   return (
     <div>
       <Switch>
         <Route path="/" exact>
-          <LandingPage setLoggedIn={setLoggedIn} />
+          <LandingPage login={login} />
         </Route>
         <Route path="/dashboard" exact>
-          <Dashboard setLoggedIn={setLoggedIn} />
+          <Dashboard logout={logout} />
         </Route>
         <Route>
           <h1>Not Found</h1>
@@ -34,7 +37,7 @@ const App = () => {
       </Switch>
     </div>
   );
-}
+};
 
 // function App() {
 //   const [loggedIn, setLoggedIn] = useState(false);
